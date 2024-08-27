@@ -3,7 +3,25 @@ import { nanoid } from '@reduxjs/toolkit'
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { sub } from 'date-fns'
 
+export interface Reactions {
+  thumbsUp: number
+  tada: number
+  heart: number
+  rocket: number
+  eyes: number
+}
+
+export type ReactionName = keyof Reactions
+
 type PostUpdate = Pick<Post, 'id' | 'title' | 'content'>
+
+const initialReactions: Reactions = {
+  thumbsUp: 0,
+  tada: 0,
+  heart: 0,
+  rocket: 0,
+  eyes: 0
+}
 
 // Define a TS type for the data we'll be using
 export interface Post {
@@ -11,7 +29,8 @@ export interface Post {
   title: string
   content: string
   user: string,
-  date: string
+  date: string,
+  reactions: Reactions
 }
 
 // Create an initial state value for the reducer, with that type
@@ -21,14 +40,16 @@ const initialState: Post[] = [
     title: 'First Post!',
     content: 'Hello!',
     user: '0',
-    date: sub(new Date(), { minutes: 10 }).toISOString()
+    date: sub(new Date(), { minutes: 10 }).toISOString(),
+    reactions: initialReactions
   },
   {
     id: '2',
     title: 'Second Post',
     content: 'More text',
     user: '2',
-    date: sub(new Date(), { minutes: 5 }).toISOString()
+    date: sub(new Date(), { minutes: 5 }).toISOString(),
+    reactions: initialReactions
   }
 ]
 
@@ -43,7 +64,14 @@ const postsSlice = createSlice({
       },
       prepare(title: string, content: string, userId: string) {
         return {
-          payload: { id: nanoid(), title, content, user: userId, date: new Date().toISOString() }
+          payload: {
+            id: nanoid(),
+            title,
+            content,
+            user: userId,
+            date: new Date().toISOString(),
+            reactions: initialReactions
+          }
         }
       }
     },
@@ -54,6 +82,16 @@ const postsSlice = createSlice({
         existingPost.title = title
         existingPost.content = content
       }
+    },
+    reactionAdded(
+      state,
+      action: PayloadAction<{ postId: string; reaction: ReactionName }>
+    ) {
+      const { postId, reaction } = action.payload
+      const existingPost = state.find(post => post.id === postId)
+      if (existingPost) {
+        existingPost.reactions[reaction]++
+      }
     }
   }
 })
@@ -62,7 +100,7 @@ const postsSlice = createSlice({
 export default postsSlice.reducer
 
 // Export the auto-generated action creator with the same name
-export const { postAdded, postUpdated } = postsSlice.actions
+export const { postAdded, postUpdated, reactionAdded } = postsSlice.actions
 
 
 export const selectAllPosts = (state: RootState) => state.posts

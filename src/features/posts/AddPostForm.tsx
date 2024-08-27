@@ -1,5 +1,5 @@
 import React from 'react'
-import { nanoid } from '@reduxjs/toolkit'
+
 import { useAppDispatch } from '@/app/hooks'
 import { type Post, postAdded } from './postsSlice'
 
@@ -27,13 +27,7 @@ export const AddPostForm = () => {
 
     console.log('Values: ', { title, content })
 
-    // Create the post object and dispatch the `postAdded` action
-    const newPost: Post = {
-      id: nanoid(),
-      title,
-      content
-    }
-    dispatch(postAdded(newPost))
+    dispatch(postAdded(title, content))
 
     e.currentTarget.reset()
   }

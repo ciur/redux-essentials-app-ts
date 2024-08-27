@@ -1,13 +1,15 @@
 import React from 'react'
 
-import { useAppDispatch } from '@/app/hooks'
+import { useAppDispatch, useAppSelector } from '@/app/hooks'
 import { type Post, postAdded } from './postsSlice'
+import { selectAllUsers } from '@/features/users/usersSlice'
 
 // TS types for the input fields
 // See: https://epicreact.dev/how-to-type-a-react-form-on-submit-handler/
 interface AddPostFormFields extends HTMLFormControlsCollection {
   postTitle: HTMLInputElement
   postContent: HTMLTextAreaElement
+  postAuthor: HTMLInputElement
 }
 interface AddPostFormElements extends HTMLFormElement {
   readonly elements: AddPostFormFields
@@ -16,6 +18,7 @@ interface AddPostFormElements extends HTMLFormElement {
 export const AddPostForm = () => {
   // Get the `dispatch` method from the store
   const dispatch = useAppDispatch()
+  const users = useAppSelector(selectAllUsers)
 
   const handleSubmit = (e: React.FormEvent<AddPostFormElements>) => {
     // Prevent server submission
@@ -24,13 +27,20 @@ export const AddPostForm = () => {
     const { elements } = e.currentTarget
     const title = elements.postTitle.value
     const content = elements.postContent.value
+    const userId = elements.postAuthor.value
 
     console.log('Values: ', { title, content })
 
-    dispatch(postAdded(title, content))
+    dispatch(postAdded(title, content, userId))
 
     e.currentTarget.reset()
   }
+
+  const usersOptions = users.map(user => (
+    <option key={user.id} value={user.id}>
+      {user.name}
+    </option>
+  ))
 
   return (
     <section>
@@ -39,6 +49,11 @@ export const AddPostForm = () => {
         <label htmlFor="postTitle">Post Title:</label>
         <input type="text" id="postTitle" defaultValue="" required />
         <label htmlFor="postContent">Content:</label>
+        <label htmlFor="postAuthor">Author:</label>
+        <select id="postAuthor" name="postAuthor" required>
+          <option value=""></option>
+          {usersOptions}
+        </select>
         <textarea
           id="postContent"
           name="postContent"

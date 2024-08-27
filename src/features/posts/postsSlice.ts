@@ -1,6 +1,7 @@
 import type { RootState } from '@/app/store'
 import { nanoid } from '@reduxjs/toolkit'
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { sub } from 'date-fns'
 
 type PostUpdate = Pick<Post, 'id' | 'title' | 'content'>
 
@@ -9,13 +10,26 @@ export interface Post {
   id: string
   title: string
   content: string
-  user: string
+  user: string,
+  date: string
 }
 
 // Create an initial state value for the reducer, with that type
 const initialState: Post[] = [
-  { id: '1', title: 'First Post!', content: 'Hello!', user: '0' },
-  { id: '2', title: 'Second Post', content: 'More text', user: '2' }
+  {
+    id: '1',
+    title: 'First Post!',
+    content: 'Hello!',
+    user: '0',
+    date: sub(new Date(), { minutes: 10 }).toISOString()
+  },
+  {
+    id: '2',
+    title: 'Second Post',
+    content: 'More text',
+    user: '2',
+    date: sub(new Date(), { minutes: 5 }).toISOString()
+  }
 ]
 
 // Create the slice and pass in the initial state
@@ -29,7 +43,7 @@ const postsSlice = createSlice({
       },
       prepare(title: string, content: string, userId: string) {
         return {
-          payload: { id: nanoid(), title, content, user: userId }
+          payload: { id: nanoid(), title, content, user: userId, date: new Date().toISOString() }
         }
       }
     },

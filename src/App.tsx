@@ -4,6 +4,7 @@ import {
   Routes,
   Navigate
 } from 'react-router-dom'
+import { ToastContainer } from 'react-tiny-toast'
 import { PostsMainPage } from './features/posts/PostsMainPage'
 import { SinglePostPage } from './features/posts/SinglePostPage'
 import { EditPostForm } from './features/posts/EditPostForm'
@@ -50,6 +51,7 @@ function App() {
             }
           />
         </Routes>
+        <ToastContainer />
       </div>
     </Router>
   )

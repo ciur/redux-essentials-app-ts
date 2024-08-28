@@ -2,7 +2,7 @@ import type { RootState } from '@/app/store'
 import { createAppAsyncThunk } from '@/app/withTypes'
 import { nanoid } from '@reduxjs/toolkit'
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { userLoggedOut } from '@/features/auth/authSlice'
+import { logout } from '@/features/auth/authSlice'
 import { client } from '@/api/client'
 import { sub } from 'date-fns'
 
@@ -117,7 +117,7 @@ const postsSlice = createSlice({
   },
   extraReducers: (builder) => {
     // Pass the action creator to `builder.addCase()`
-    builder.addCase(userLoggedOut, (state) => {
+    builder.addCase(logout.fulfilled, (state) => {
       // Clear out the list of posts whenever the user logs out
       return initialState
     })
@@ -154,3 +154,9 @@ export const selectPostById = (state: RootState, postId: string) =>
 
 export const selectPostsStatus = (state: RootState) => state.posts.status
 export const selectPostsError = (state: RootState) => state.posts.error
+
+export const selectPostsByUser = (state: RootState, userId: string) => {
+  const allPosts = selectAllPosts(state)
+  // ❌ This seems suspicious! See more details below
+  return allPosts.filter(post => post.user === userId)
+}

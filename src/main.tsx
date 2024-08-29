@@ -2,7 +2,7 @@ import React from 'react'
 import { createRoot } from 'react-dom/client'
 import { Provider } from 'react-redux'
 import { store } from './app/store'
-import { fetchUsers } from './features/users/usersSlice'
+import { apiSliceWithUsers } from './features/users/usersSlice'
 
 import App from './App'
 
@@ -17,7 +17,7 @@ async function start() {
   await worker.start({ onUnhandledRequest: 'bypass' })
 
   const root = createRoot(document.getElementById('root')!)
-  store.dispatch(fetchUsers())
+  store.dispatch(apiSliceWithUsers.endpoints.getUsers.initiate())
 
   root.render(
     <React.StrictMode>

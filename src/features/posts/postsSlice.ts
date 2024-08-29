@@ -4,6 +4,7 @@ import { nanoid } from '@reduxjs/toolkit'
 import { createSlice, PayloadAction, createSelector, createEntityAdapter, EntityState } from '@reduxjs/toolkit'
 import { AppStartListening } from '@/app/listenerMiddleware'
 import { logout } from '@/features/auth/authSlice'
+import { apiSlice } from '@/features/api/apiSlice'
 import { client } from '@/api/client'
 import { sub } from 'date-fns'
 
@@ -153,11 +154,29 @@ export const selectPostsByUser = createSelector(
 
 export const addPostsListeners = (startAppListening: AppStartListening) => {
   startAppListening({
-    actionCreator: addNewPost.fulfilled,
+    matcher: apiSlice.endpoints.addNewPost.matchFulfilled,
     effect: async (action, listenerApi) => {
       const { toast } = await import('react-tiny-toast')
 
       const toastId = toast.show('New post added!', {
+        variant: 'success',
+        position: 'bottom-right',
+        pause: true
+      })
+
+      await listenerApi.delay(5000)
+      toast.remove(toastId)
+    }
+  })
+}
+
+export const updatePostsListeners = (startAppListening: AppStartListening) => {
+  startAppListening({
+    matcher: apiSlice.endpoints.editPost.matchFulfilled,
+    effect: async (action, listenerApi) => {
+      const { toast } = await import('react-tiny-toast')
+
+      const toastId = toast.show('Post updated!', {
         variant: 'success',
         position: 'bottom-right',
         pause: true

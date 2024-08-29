@@ -20,10 +20,14 @@ export const apiSlice = createApi({
     getPosts: builder.query<Post[], void>({
       // The URL for the request is '/fakeApi/posts'
       query: () => '/posts',
-      providesTags: ['Post']
+      providesTags: (result = [], error, arg) => [
+        'Post',
+        ...result.map(({ id }) => ({ type: 'Post', id }) as const)
+      ]
     }),
     getPost: builder.query<Post, string>({
-      query: postId => `/posts/${postId}`
+      query: postId => `/posts/${postId}`,
+      providesTags: (result, error, arg) => [{ type: 'Post', id: arg }]
     }),
     addNewPost: builder.mutation<Post, NewPost>({
       query: initialPost => ({
@@ -41,7 +45,8 @@ export const apiSlice = createApi({
         url: `posts/${post.id}`,
         method: 'PATCH',
         body: post
-      })
+      }),
+      invalidatesTags: (result, error, arg) => [{ type: 'Post', id: arg.id }]
     })
   }),
 

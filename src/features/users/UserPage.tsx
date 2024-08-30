@@ -2,7 +2,6 @@ import { Link, useParams } from 'react-router-dom'
 import { createSelector } from '@reduxjs/toolkit'
 import type { TypedUseQueryStateResult } from '@reduxjs/toolkit/query/react'
 import { useAppSelector } from '@/app/hooks'
-import { selectPostsByUser } from '@/features/posts/postsSlice'
 import { useGetPostsQuery, Post } from '@/features/api/apiSlice'
 
 import { selectUserById } from './usersSlice'
